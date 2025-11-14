@@ -1,21 +1,21 @@
-# ---- Build Go Binary ----
+# ---- Builder ----
 FROM golang:1.24-alpine AS builder
 
-# Install dependencies
+# Install git (for go mod)
 RUN apk add --no-cache git
 
 WORKDIR /app
 
-# Copy go mod files first (for Docker caching)
+# Copy go mod files (must exist!)
 COPY go.mod go.sum ./
 
-# Download modules
+# Download deps
 RUN go mod download
 
-# Copy the entire backend source
+# Copy source
 COPY . .
 
-# Build binary (production safe)
+# Build (CGO=0 = safe for alpine)
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ome-tv-backend .
 
 # ---- Runtime ----
@@ -25,7 +25,6 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /app
 
-# Copy backend binary
 COPY --from=builder /app/ome-tv-backend .
 
 EXPOSE 8080

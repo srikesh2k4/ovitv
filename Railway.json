@@ -1,11 +1,12 @@
 {
   "build": {
-    "builder": "dockerfile",
-    "dockerfilePath": "backend/Dockerfile",
-    "rootDirectory": "backend"
+    "builder": "paketobuildpacks/builder:base"
   },
-  "deploy": {
-    "startCommand": "./server",
-    "restartPolicyType": "ON_FAILURE"
-  }
+  "services": [
+    {
+      "name": "backend",
+      "root": "backend",
+      "startCommand": "./ome-tv-backend"
+    }
+  ]
 }
