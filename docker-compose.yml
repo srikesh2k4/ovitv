@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    volumes:
+      - ./data:/app/data
+      - ./.env:/app/.env
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  client:
+    build: ./client
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  admin:
+    build: ./admin
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/certs:ro
+      - ./client/.next:/var/www/client
+      - ./admin/.next:/var/www/admin
+    depends_on:
+      - client
+      - admin
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certs:/etc/letsencrypt
+      - ./client/public:/var/www/html
+    entrypoint: >
+      /bin/sh -c "
+      trap exit TERM;
+      while :; do
+        certbot renew --quiet;
+        sleep 12h;
+      done;
+      "
