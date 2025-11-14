@@ -79,3 +79,11 @@ Thumbs.db
 /tmp/
 /coverage/
 /*.log
+
+node_modules/
+**/node_modules/
+.next/
+dist/
+.env
+certs/
+data/
