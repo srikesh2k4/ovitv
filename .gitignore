@@ -87,3 +87,9 @@ dist/
 .env
 certs/
 data/
+node_modules/
+**/node_modules/
+.next/
+dist/
+certs/
+.env
