@@ -1,0 +1,11 @@
+.git
+.gitignore
+node_modules
+*.md
+*.log
+data
+certs
+admin
+client
+nginx
+deploy.sh
