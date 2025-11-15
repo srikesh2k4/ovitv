@@ -2,7 +2,6 @@
 FROM node:18-alpine AS builder
 
 WORKDIR /app
-
 COPY package.json package-lock.json ./
 RUN npm install
 
@@ -11,17 +10,14 @@ RUN npm run build
 
 # --- Runner ---
 FROM node:18-alpine
-
 WORKDIR /app
 
-# Copy Next.js standalone output
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
 ENV NODE_ENV=production
-ENV PORT=8080
-
-EXPOSE 8080
+ENV PORT=3000
+EXPOSE 3000
 
 CMD ["node", "server.js"]

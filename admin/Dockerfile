@@ -1,38 +1,23 @@
-# ---------------------
-# 1. Builder
-# ---------------------
+# --- Builder ---
 FROM node:18-alpine AS builder
 
 WORKDIR /app
-
-# Install deps
 COPY package.json package-lock.json ./
-RUN npm install --production=false
+RUN npm install
 
-# Copy entire project
 COPY . .
-
-# Build Next.js
 RUN npm run build
 
-
-# ---------------------
-# 2. Runner
-# ---------------------
+# --- Runner ---
 FROM node:18-alpine
-
 WORKDIR /app
 
-# Copy standalone Next.js build
-COPY --from=builder /app/.next/standalone/ ./
-COPY --from=builder /app/.next/static/ ./.next/static/
-
-# ❌ DO NOT COPY PUBLIC (it does NOT exist)
-# Next.js 14 standalone works fine without it
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
 
 ENV NODE_ENV=production
-ENV PORT=8080
-
-EXPOSE 8080
+ENV PORT=3001
+EXPOSE 3001
 
 CMD ["node", "server.js"]

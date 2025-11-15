@@ -25,18 +25,12 @@ FROM debian:bullseye-slim
 
 WORKDIR /app
 
-# Install sqlite runtime libs
 RUN apt-get update && apt-get install -y sqlite3 libsqlite3-0 && rm -rf /var/lib/apt/lists/*
 
-# Bring in Go server binary
 COPY --from=builder /app/server .
-
-# Bring in templates
 COPY --from=builder /app/templates ./templates
 
-# Ensure database folder exists
 RUN mkdir -p /app/data
 
 EXPOSE 8080
-
 CMD ["./server"]
