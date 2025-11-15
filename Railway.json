@@ -1,20 +1,55 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "dockerfile",
-    "dockerfilePath": "backend/Dockerfile",
-    "rootDirectory": "backend"
+    "backend": {
+      "rootDirectory": "backend",
+      "buildCommand": "",
+      "dockerfilePath": "backend/Dockerfile",
+      "watchPatterns": ["backend/**"]
+    },
+    "client": {
+      "rootDirectory": "client",
+      "buildCommand": "",
+      "dockerfilePath": "client/Dockerfile",
+      "watchPatterns": ["client/**"]
+    },
+    "admin": {
+      "rootDirectory": "admin",
+      "buildCommand": "",
+      "dockerfilePath": "admin/Dockerfile",
+      "watchPatterns": ["admin/**"]
+    }
   },
   "deploy": {
-    "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
+    "backend": {
+      "startCommand": "",
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 10,
+      "healthcheckPath": "/api/health",
+      "port": 8080
+    },
+    "client": {
+      "startCommand": "",
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 10,
+      "port": 3000
+    },
+    "admin": {
+      "startCommand": "",
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 10,
+      "port": 3001
+    }
   },
-  "environment": {
-    "ENV": "production",
-    "ADMIN_USERNAME": "admin",
-    "ADMIN_PASSWORD": "SuperSecure2025!",
-    "DOMAIN": "ovitv.ddns.net",
-    "SESSION_SECRET": "somerandom32charsecret",
-    "NEXT_PUBLIC_WS_URL": "wss://ovitv.ddns.net/ws"
+  "services": {
+    "backend": {
+      "name": "backend"
+    },
+    "client": {
+      "name": "client"
+    },
+    "admin": {
+      "name": "admin"
+    }
   }
 }
