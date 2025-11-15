@@ -20,8 +20,8 @@ COPY --from=builder /app/.next/static ./.next/static
 # ❌ DO NOT COPY PUBLIC (admin has no public folder)
 
 ENV NODE_ENV=production
-ENV PORT=8080
+ENV PORT=3001
 
-EXPOSE 8080
+EXPOSE 3001
 
 CMD ["node", "server.js"]
