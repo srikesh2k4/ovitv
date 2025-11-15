@@ -6,10 +6,10 @@ import (
     "log"
     "net/http"
 
-    "ome-tv-pro/backend/handlers"
-    "ome-tv-pro/backend/middleware"
-    "ome-tv-pro/backend/models"
-    "ome-tv-pro/backend/signaling"
+    "github.com/srikesh2k4/ovitv/backend/handlers"
+    "github.com/srikesh2k4/ovitv/backend/middleware"
+    "github.com/srikesh2k4/ovitv/backend/models"
+    "github.com/srikesh2k4/ovitv/backend/signaling"
 
     "github.com/joho/godotenv"
 )
@@ -41,10 +41,8 @@ func main() {
 
     // ------------------ API ROUTES ------------------
 
-    // Report endpoint
     http.Handle("/api/report", secure(http.HandlerFunc(handlers.ReportHandler)))
 
-    // WebSocket endpoint
     http.Handle("/ws", secure(signaling.ServeWs(hub)))
 
     // ------------------ ADMIN ROUTES ------------------
