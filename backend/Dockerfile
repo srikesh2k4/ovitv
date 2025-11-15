@@ -1,29 +1,42 @@
-# --- Builder ---
-FROM node:18-alpine AS builder
+# ---------------------------
+# 1. Build Stage
+# ---------------------------
+FROM golang:1.23-bullseye AS builder
 
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm install --production=false
 
+# Install sqlite libraries for CGO build
+RUN apt-get update && apt-get install -y gcc g++ sqlite3 libsqlite3-dev
+
+# Copy Go mod files first
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy rest of backend source
 COPY . .
-RUN npm run build
 
-# --- Runner ---
-FROM node:18-alpine
+# Build Go binary
+RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o server .
+
+# ---------------------------
+# 2. Run Stage
+# ---------------------------
+FROM debian:bullseye-slim
 
 WORKDIR /app
 
-# Copy Next.js standalone output
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# Install sqlite runtime libs
+RUN apt-get update && apt-get install -y sqlite3 libsqlite3-0 && rm -rf /var/lib/apt/lists/*
 
-# Only copy public if it exists
-# (safe even if empty)
-COPY --from=builder /app/public ./public
+# Bring in Go server binary
+COPY --from=builder /app/server .
 
-ENV NODE_ENV=production
-ENV PORT=3001
+# Bring in templates
+COPY --from=builder /app/templates ./templates
 
-EXPOSE 3001
+# Ensure database folder exists
+RUN mkdir -p /app/data
 
-CMD ["node", "server.js"]
+EXPOSE 8080
+
+CMD ["./server"]

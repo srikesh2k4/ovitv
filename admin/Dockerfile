@@ -5,14 +5,14 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies
+# Copy dependency files
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install --production=false
 
-# Copy rest of the app
+# Copy entire project
 COPY . .
 
-# Build Next.js
+# Build Next.js (creates .next/standalone)
 RUN npm run build
 
 
@@ -23,18 +23,20 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy standalone build (Next.js 14 generates server.js + .next)
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# Copy standalone output (contains server.js + internal node_modules)
+COPY --from=builder /app/.next/standalone/ ./
 
-# Safe: Only copy public IF exists (won't break if missing)
-RUN mkdir -p ./public
-COPY --from=builder /app/public ./public 2>/dev/null || true
+# Copy static files
+COPY --from=builder /app/.next/static/ ./.next/static/
+
+# Copy public folder ONLY if exists
+RUN mkdir -p /app/public
+COPY --from=builder /app/public/ ./public/ || true
 
 ENV NODE_ENV=production
 ENV PORT=3001
 
 EXPOSE 3001
 
-# Run Next.js standalone server
+# Start Next.js standalone server
 CMD ["node", "server.js"]
