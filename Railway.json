@@ -1,8 +1,7 @@
 {
   "build": {
-    "rootDirectory": "backend"
-  },
-  "deploy": {
-    "startCommand": "./out"
+    "builder": "DOCKERFILE",
+    "dockerfile": "./backend/Dockerfile",
+    "context": "./backend"
   }
 }

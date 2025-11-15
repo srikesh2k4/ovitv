@@ -3,10 +3,12 @@ package handlers
 import (
     "html/template"
     "net/http"
-    "ome-tv-pro/backend/middleware"
-    "ome-tv-pro/backend/models"
-    "ome-tv-pro/backend/utils"
+
+    "github.com/srikesh2k4/ovitv/backend/middleware"
+    "github.com/srikesh2k4/ovitv/backend/models"
+    "github.com/srikesh2k4/ovitv/backend/utils"
 )
+
 
 
 const adminSession = "admin-session"

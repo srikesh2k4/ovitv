@@ -2,10 +2,11 @@ package models
 
 import (
     "errors"
+
     "golang.org/x/crypto/bcrypt"
 )
 
-const HashCost = 12 // OWASP recommends 10–14
+const HashCost = 12 // OWASP: recommended cost 10–14
 
 func HashPassword(password string) (string, error) {
     if len(password) < 8 {

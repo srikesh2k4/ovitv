@@ -6,7 +6,7 @@ import (
     "time"
 
     "golang.org/x/time/rate"
-    "ome-tv-pro/backend/utils"
+    "github.com/srikesh2k4/ovitv/backend/utils"
 )
 
 var mu sync.Mutex

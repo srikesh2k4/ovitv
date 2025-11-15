@@ -4,15 +4,28 @@ import (
     "crypto/rand"
     "encoding/base64"
     "net/http"
+    "os"
 
     "github.com/gorilla/sessions"
 )
 
+// -------- Session Keys (LOAD FROM ENV) --------
+
+func getEnvKey(name string, size int) []byte {
+    val := os.Getenv(name)
+    if len(val) < size {
+        // auto generate fallback key (only for dev)
+        b := make([]byte, size)
+        rand.Read(b)
+        return b
+    }
+    return []byte(val)
+}
+
 var (
-    // 64-byte auth key + 32-byte encryption key
-    sessionAuthKey  = []byte("kjsdf83r9f8r3h9f8h39fh398h398h398h398h398h398h398h39")
-    sessionEncryptKey = []byte("fj9e8h39fh398h398fh398fh398fh398")
-    
+    sessionAuthKey    = getEnvKey("SESSION_AUTH_KEY", 32)    // 32 bytes
+    sessionEncryptKey = getEnvKey("SESSION_ENCRYPT_KEY", 32) // 32 bytes
+
     Store = sessions.NewCookieStore(sessionAuthKey, sessionEncryptKey)
 )
 
@@ -20,10 +33,12 @@ func init() {
     Store.Options = &sessions.Options{
         Path:     "/",
         HttpOnly: true,
-        Secure:   false, // set TRUE in production
-        SameSite: http.SameSiteLaxMode,
+        Secure:   true,                          // REQUIRED for Railway (HTTPS)
+        SameSite: http.SameSiteNoneMode,         // works with cross-site admin panel
     }
 }
+
+// -------- CSRF Helpers --------
 
 func GenerateCSRFToken() (string, error) {
     b := make([]byte, 32)

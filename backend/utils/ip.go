@@ -6,11 +6,10 @@ import (
     "strings"
 )
 
+// GetIP extracts the real client IP from headers or fallback connection.
 func GetIP(r *http.Request) string {
-    // 1. Check X-Forwarded-For (can contain multiple IPs)
-    fwd := r.Header.Get("X-Forwarded-For")
-    if fwd != "" {
-        // Extract the first valid IP
+    // 1. Check X-Forwarded-For (can contain multiple IPs: "client, proxy1, proxy2")
+    if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
         parts := strings.Split(fwd, ",")
         ip := strings.TrimSpace(parts[0])
         if net.ParseIP(ip) != nil {
@@ -19,17 +18,18 @@ func GetIP(r *http.Request) string {
     }
 
     // 2. Check X-Real-IP
-    realIP := r.Header.Get("X-Real-IP")
-    if realIP != "" && net.ParseIP(realIP) != nil {
-        return realIP
+    if realIP := r.Header.Get("X-Real-IP"); realIP != "" {
+        if net.ParseIP(realIP) != nil {
+            return realIP
+        }
     }
 
-    // 3. Fallback: use RemoteAddr
+    // 3. Fallback to RemoteAddr
     ip, _, err := net.SplitHostPort(r.RemoteAddr)
     if err == nil && net.ParseIP(ip) != nil {
         return ip
     }
 
-    // 4. Last fallback (uncommon)
+    // 4. Very last fallback (rare cases)
     return r.RemoteAddr
 }

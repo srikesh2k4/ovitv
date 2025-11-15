@@ -5,9 +5,11 @@ import (
     "errors"
     "io"
     "net/http"
-    "ome-tv-pro/backend/models"
-    "ome-tv-pro/backend/utils"
+
+    "github.com/srikesh2k4/ovitv/backend/models"
+    "github.com/srikesh2k4/ovitv/backend/utils"
 )
+
 
 type ReportRequest struct {
     ReportedIP string `json:"reported_ip"`

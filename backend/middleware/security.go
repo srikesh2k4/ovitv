@@ -14,7 +14,7 @@ func SecurityHeaders(next http.Handler) http.Handler {
         w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
         w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
 
-        // Only enable HSTS in production
+        // Enable HSTS only in production
         if os.Getenv("ENV") == "production" {
             w.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
         }
@@ -28,7 +28,7 @@ func CORS(next http.Handler) http.Handler {
 
         origin := r.Header.Get("Origin")
 
-        // Allow localhost during development
+        // Development allowed origins
         if origin == "http://localhost:3000" ||
             origin == "http://127.0.0.1:3000" ||
             origin == "http://localhost:5173" ||
@@ -38,7 +38,7 @@ func CORS(next http.Handler) http.Handler {
             w.Header().Set("Access-Control-Allow-Origin", origin)
 
         } else {
-            // Production domain (YOUR NO-IP DOMAIN)
+            // Production domain
             w.Header().Set("Access-Control-Allow-Origin", "https://ovitv.ddns.net")
         }
 
@@ -48,8 +48,8 @@ func CORS(next http.Handler) http.Handler {
         w.Header().Set("Access-Control-Allow-Headers",
             "Content-Type, Authorization, X-CSRF-Token, Accept, Origin, Upgrade, Connection")
 
-        // WebSocket preflight
-        if r.Method == "OPTIONS" {
+        // Preflight
+        if r.Method == http.MethodOptions {
             w.WriteHeader(http.StatusOK)
             return
         }

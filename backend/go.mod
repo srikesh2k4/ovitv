@@ -1,4 +1,4 @@
-module ome-tv-pro/backend
+module github.com/srikesh2k4/ovitv/backend
 
 go 1.23
 

@@ -26,6 +26,7 @@ type BannedIP struct {
 
 func InitDB() {
     os.MkdirAll("./data", 0755)
+
     var err error
     DB, err = sql.Open("sqlite3", "./data/app.db")
     if err != nil {
@@ -44,11 +45,13 @@ func InitDB() {
             reason TEXT NOT NULL,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         );
+
         CREATE TABLE IF NOT EXISTS banned_ips (
             ip TEXT PRIMARY KEY,
             reason TEXT,
             banned_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
+
         CREATE TABLE IF NOT EXISTS admins (
             id INTEGER PRIMARY KEY,
             username TEXT UNIQUE NOT NULL,
@@ -59,6 +62,7 @@ func InitDB() {
         log.Fatal(err)
     }
 
+    // Insert default admin
     hash, _ := HashPassword(os.Getenv("ADMIN_PASSWORD"))
     DB.Exec(`INSERT OR IGNORE INTO admins (username, password_hash) VALUES (?, ?)`,
         os.Getenv("ADMIN_USERNAME"), hash)
