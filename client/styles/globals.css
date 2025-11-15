@@ -1,0 +1,9 @@
+html,body,#__next { height:100%; margin:0; font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#0f172a; color:#e6eef8; }
+.container { max-width:1000px; margin:32px auto; padding:20px; }
+.header { display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.controls { display:flex; gap:8px; align-items:center; }
+.video-grid { display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap; }
+video { width:320px; height:240px; background:#000; border-radius:8px; }
+.btn { background:#0369a1; border:none; padding:8px 12px; color:white; border-radius:6px; cursor:pointer; }
+.btn.ghost { background:transparent; border:1px solid rgba(255,255,255,0.08); }
+.status { font-size:14px; opacity:0.9; }
