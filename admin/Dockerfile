@@ -1,38 +1,24 @@
-# ---------------------
-# 1. Builder
-# ---------------------
+# --- Builder ---
 FROM node:18-alpine AS builder
 
 WORKDIR /app
-
-# Install dependencies
 COPY package.json package-lock.json ./
-RUN npm install --production=false
+RUN npm install
 
-# Copy full project
 COPY . .
-
-# Build Next.js standalone output
 RUN npm run build
 
-
-# ---------------------
-# 2. Runner
-# ---------------------
+# --- Runner ---
 FROM node:18-alpine
-
 WORKDIR /app
 
-# Copy Next.js standalone build
 COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static/
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
 
-# Environment port
 ENV NODE_ENV=production
-ENV PORT=3001
+ENV PORT=8080
 
-# Expose the same port Next.js uses
-EXPOSE 3001
+EXPOSE 8080
 
-# Run standalone server
 CMD ["node", "server.js"]
