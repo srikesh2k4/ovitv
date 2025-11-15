@@ -31,8 +31,8 @@ COPY --from=builder /app/.next/static/ ./.next/static/
 # Next.js 14 standalone works fine without it
 
 ENV NODE_ENV=production
-ENV PORT=3001
+ENV PORT=8080
 
-EXPOSE 3001
+EXPOSE 8080
 
 CMD ["node", "server.js"]
