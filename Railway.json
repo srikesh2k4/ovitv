@@ -1,12 +1,8 @@
 {
   "build": {
-    "builder": "paketobuildpacks/builder:base"
+    "rootDirectory": "backend"
   },
-  "services": [
-    {
-      "name": "backend",
-      "root": "backend",
-      "startCommand": "./ome-tv-backend"
-    }
-  ]
+  "deploy": {
+    "startCommand": "./out"
+  }
 }
