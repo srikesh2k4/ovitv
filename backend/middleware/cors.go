@@ -10,15 +10,25 @@ func CORS(next http.Handler) http.Handler {
 
         origin := r.Header.Get("Origin")
 
-        if origin == "http://localhost:3000" ||
-            origin == "http://127.0.0.1:3000" ||
-            origin == "http://localhost:5173" ||
-            origin == "http://localhost:8080" ||
-            os.Getenv("ENV") != "production" {
+        // Allowed origins list
+        allowedOrigins := map[string]bool{
+            "http://localhost:3000":             true,
+            "http://127.0.0.1:3000":             true,
+            "http://localhost:5173":             true,
+            "http://localhost:8080":             true,
+            "https://ovitv.up.railway.app":      true, // CLIENT
+            "https://ovitv-admin.up.railway.app": true, // ADMIN
+            "https://ovitv.ddns.net":             true, // CUSTOM DOMAIN
+        }
 
-            w.Header().Set("Access-Control-Allow-Origin", origin)
+        // In production — only allow known domains
+        if os.Getenv("ENV") == "production" {
+            if allowedOrigins[origin] {
+                w.Header().Set("Access-Control-Allow-Origin", origin)
+            }
         } else {
-            w.Header().Set("Access-Control-Allow-Origin", "https://ovitv.ddns.net")
+            // In development — allow any origin
+            w.Header().Set("Access-Control-Allow-Origin", origin)
         }
 
         w.Header().Set("Vary", "Origin")
