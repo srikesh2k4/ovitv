@@ -1,34 +1,39 @@
 # ---- BUILD STAGE ----
-FROM golang:1.23-alpine AS builder
+FROM golang:1.23-bullseye AS builder
 
-RUN apk add --no-cache build-base sqlite-dev
+# Install build dependencies
+RUN apt-get update && apt-get install -y gcc g++ sqlite3 libsqlite3-dev
 
 WORKDIR /app
 
-# Copy go mod files
+# Copy go.mod and go.sum
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the entire backend source
+# Copy the backend source code
 COPY . .
 
-# Build the Go binary
+# Build Go binary with CGO enabled
+ENV CGO_ENABLED=1
+ENV GOOS=linux
+ENV GOARCH=amd64
+
 RUN go build -o server .
 
-# ---- RUN STAGE ----
-FROM alpine:latest
+# ---- RUNTIME STAGE ----
+FROM debian:bullseye-slim
 
-RUN apk add --no-cache sqlite-libs
+RUN apt-get update && apt-get install -y sqlite3 libsqlite3-0 && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy the binary from builder
+# Copy binary
 COPY --from=builder /app/server .
 
-# Copy templates folder
+# Copy templates
 COPY --from=builder /app/templates ./templates
 
-# Create data folder inside container
+# Create data folder
 RUN mkdir -p /app/data
 
 EXPOSE 8080
